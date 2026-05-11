@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ziyo Portali - Ona tili va Adabiyot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;600&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fdfbf7; color: #1a1a1a; }
+        .literary-font { font-family: 'Crimson Pro', serif; }
+        .book-card { background: #fff; border: 1px solid #e5e7eb; transition: all 0.3s ease; }
+        .book-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #d1d5db; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+
+        const LITERATURE_DB = [
+            { id: 1, term: "Qiyomat qarz", author: "O'lmas Umarbekov", type: "Adabiyot", category: "Dramaturgiya", def: "Insoniy mas'uliyat va vijdon mavzusidagi muhim asar." },
+            { id: 2, term: "O'tkan kunlar", author: "Abdulla Qodiriy", type: "Adabiyot", category: "Roman", def: "O'zbek adabiyotidagi birinchi roman, sevgi va tarixiy voqealar majmuasi." },
+            { id: 3, term: "Egalik qo'shimchalari", author: "Grammatika", type: "Ona tili", category: "Morfologiya", def: "Shaxs-sonni ifodalab, narsaning biror shaxsga qarashli ekanini bildiradi." },
+            { id: 4, term: "Sintaksis", author: "Grammatika", type: "Ona tili", category: "Tilshunoslik", def: "So'z birikmasi va gaplarni o'rganuvchi bo'lim." },
+            { id: 5, term: "Yulduzli tunlar", author: "Pirimqul Qodirov", type: "Adabiyot", category: "Tarixiy roman", def: "Boburning hayoti va faoliyati haqida hikoya qiluvchi asar." },
+            { id: 6, term: "Metafora", author: "Adabiyotshunoslik", type: "Adabiyot", category: "Badiiy san'at", def: "O'xshashlik asosida ma'noning ko'chishi (masalan: 'kumush qish')." },
+            { id: 7, term: "Fonetika", author: "Grammatika", type: "Ona tili", category: "Tilshunoslik", def: "Nutq tovushlarini o'rganuvchi bo'lim." },
+            { id: 8, term: "Kecha va kunduz", author: "Cho'lpon", type: "Adabiyot", category: "Roman", def: "O'zbek xalqining chor mustabidligi davridagi hayoti tasviri." }
+        ];
+
+        const App = () => {
+            const [search, setSearch] = useState("");
+            const [tab, setTab] = useState("Hammasi");
+
+            const filtered = useMemo(() => {
+                return LITERATURE_DB.filter(item => {
+                    const matchesSearch = item.term.toLowerCase().includes(search.toLowerCase()) || 
+                                          item.author.toLowerCase().includes(search.toLowerCase());
+                    const matchesTab = tab === "Hammasi" || item.type === tab;
+                    return matchesSearch && matchesTab;
+                });
+            }, [search, tab]);
+
+            return (
+                <div className="min-h-screen">
+                    {/* Header */}
+                    <div className="bg-[#1e293b] text-white py-16 px-6">
+                        <div className="max-w-4xl mx-auto text-center">
+                            <h1 className="literary-font text-5xl font-bold mb-4 italic">Ziyo Portali</h1>
+                            <p className="text-slate-400 tracking-widest uppercase text-sm">Ona tili va mumtoz adabiyot xazinasi</p>
+                        </div>
+                    </div>
+
+                    <main className="max-w-5xl mx-auto -mt-10 px-6 pb-20">
+                        {/* Search Bar */}
+                        <div className="bg-white shadow-xl rounded-2xl p-2 flex flex-col md:flex-row gap-2 border border-slate-200">
+                            <input 
+                                type="text" 
+                                placeholder="Asar, adib yoki qoidani qidiring..." 
+                                className="flex-1 p-4 outline-none text-lg rounded-xl"
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                            <div className="flex bg-slate-100 p-1 rounded-xl">
+                                {["Hammasi", "Ona tili", "Adabiyot"].map(t => (
+                                    <button 
+                                        key={t}
+                                        onClick={() => setTab(t)}
+                                        className={`px-6 py-2 rounded-lg font-semibold transition-all ${tab === t ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+                                    >
+                                        {t}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Results Count */}
+                        <div className="mt-8 mb-6 flex items-center justify-between border-b pb-4">
+                            <span className="text-slate-500 font-medium">{filtered.length} ta ma'lumot topildi</span>
+                            <div className="h-1 w-20 bg-blue-500"></div>
+                        </div>
+
+                        {/* Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {filtered.length > 0 ? filtered.map(item => (
+                                <div key={item.id} className="book-card p-8 rounded-2xl flex flex-col justify-between border-l-4 border-l-blue-900">
+                                    <div>
+                                        <div className="flex justify-between items-start mb-4">
+                                            <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter">
+                                                {item.category}
+                                            </span>
+                                            <span className="text-xs text-slate-400 italic">#{item.type}</span>
+                                        </div>
+                                        <h3 className="literary-font text-2xl font-bold text-slate-900 mb-1">{item.term}</h3>
+                                        <p className="text-blue-600 font-semibold text-sm mb-4">{item.author}</p>
+                                        <p className="text-slate-600 leading-relaxed text-sm antialiased">{item.def}</p>
+                                    </div>
+                                    <div className="mt-6 pt-4 border-t border-slate-50 flex justify-end">
+                                        <button className="text-xs font-bold text-slate-400 hover:text-blue-600 transition">TO'LIQ O'QISH</button>
+                                    </div>
+                                </div>
+                            )) : (
+                                <div className="col-span-full py-20 text-center">
+                                    <p className="text-slate-400 italic">Ma'lumot topilmadi. Qidiruv so'zini tekshirib ko'ring.</p>
+                                </div>
+                            )}
+                        </div>
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="bg-white border-t border-slate-200 py-10 text-center">
+                        <p className="text-slate-400 text-xs">Sardorbek Qurbondurdiyev | Netlify Portfolio Proyekti | 2026</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
